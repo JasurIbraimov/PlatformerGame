@@ -59,3 +59,4 @@ ROOM_4 = [
 ]
 
 
+ROOMS = [ROOM_1, ROOM_2, ROOM_3, ROOM_4]

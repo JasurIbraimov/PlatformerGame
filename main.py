@@ -22,8 +22,9 @@ class Game(arcade.Window):
         self.traps = None
         self.lives = None
         self.gems = None
-        self.player = Player(difference(1, TILE_WIDTH) , difference(1, TILE_HEIGHT))
-        self.rooms = [ROOM_1, ROOM_2, ROOM_3, ROOM_4]
+        self.players = None
+        self.player = None
+        self.rooms = ROOMS
         self.current_room = 0
         self.win = False
         self.lose = False
@@ -36,6 +37,9 @@ class Game(arcade.Window):
         self.win_text = arcade.Text("YOU WIN!", SCREEN_WIDTH/6, SCREEN_HEIGHT/2, arcade.color.GHOST_WHITE,75, 
                             font_name="kenvector future")
         self.lose_text = arcade.Text("YOU LOSE!", SCREEN_WIDTH/6, SCREEN_HEIGHT/2, arcade.color.RED, 70, 
+                            font_name="kenvector future")
+    
+        self.choose_text = arcade.Text("CHOOSE CHARACTER!", SCREEN_WIDTH/4, SCREEN_HEIGHT/1.8, arcade.color.RED, 25, 
                             font_name="kenvector future")
 
         self.gems_count = 0
@@ -54,7 +58,11 @@ class Game(arcade.Window):
             self.key.draw()
         if self.door is not None:
             self.door.draw()
-        self.player.draw()
+        if self.player is not None:
+            self.player.draw()
+        else:
+            self.choose_text.draw()
+            self.players.draw()
         self.lives.draw()
         self.gems_text.draw()
         self.gems.draw()
@@ -62,12 +70,13 @@ class Game(arcade.Window):
             self.win_text.draw()
         if self.lose: 
             self.lose_text.draw()
-        if self.win or self.lose: 
-            self.restart_button.draw()
+        if self.win or self.lose or self.player is None: 
             self.mouse_cursor.draw()
+        if self.win or self.lose:
+            self.restart_button.draw()
      
     def update(self, delta_time):
-        if self.win or self.lose:
+        if self.win or self.lose or self.player is None:
             return 
         if len(self.lives) == 0: 
             self.lose = True
@@ -137,9 +146,17 @@ class Game(arcade.Window):
         self.tiles = arcade.SpriteList()
         self.traps = arcade.SpriteList()
         self.gems = arcade.SpriteList()
+        self.players = arcade.SpriteList()
+        players_name = ["robot", "male", "female", "zombie"]
+        for i in range(4):
+            player = Player(players_name[i], difference(i+5, TILE_WIDTH), difference(6, TILE_HEIGHT), 1)
+            player.reset()
+            player.center_x += i * 75 
+            self.players.append(player)
+
         self.setup_borders()
-        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, gravity_constant=PLAYER_GRAVITY, walls=self.tiles)
-        self.player.reset()
+        if self.player is not None:
+            self.player.reset()
         # ROOM BLOCKS
         random_color = random.randint(1, 4)
         for y in range(0, ROW_COUNT - 2): 
@@ -185,7 +202,7 @@ class Game(arcade.Window):
         self.setup_lives()
 
     def on_key_press(self, key, modifiers):
-        if self.win or self.lose:
+        if self.win or self.lose or self.player is None:
             return 
         if key == arcade.key.RIGHT: 
             self.player.go_right()
@@ -197,13 +214,13 @@ class Game(arcade.Window):
             self.player.is_jumping = True
 
     def on_key_release(self, key, modifiers):
-        if self.win or self.lose:
+        if self.win or self.lose or self.player is None:
             return 
         if key == arcade.key.RIGHT or key == arcade.key.LEFT : 
             self.player.stand()
 
     def on_mouse_motion(self, x, y, dx, dy):
-        if self.win or self.lose:
+        if self.win or self.lose or self.player is None:
             self.mouse_cursor.center_x = x
             self.mouse_cursor.center_y = y
             if self.restart_button.left < x < self.restart_button.right  and self.restart_button.bottom < y < self.restart_button.top:
@@ -212,9 +229,17 @@ class Game(arcade.Window):
                 self.restart_button.texture = arcade.load_texture("assets\images\\ui\yellow_button00.png")
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.win or self.lose and button == arcade.MOUSE_BUTTON_LEFT:
-            if self.restart_button.left < x < self.restart_button.right  and self.restart_button.bottom < y < self.restart_button.top:
-                self.restart()
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            if  self.win or self.lose:
+                if self.restart_button.left < x < self.restart_button.right  and self.restart_button.bottom < y < self.restart_button.top:
+                    self.restart()
+            if self.player is None:
+                for player in self.players: 
+                    if player.left < x < player.right and player.bottom < y < player.top: 
+                        self.player = Player(player.name, difference(1, TILE_WIDTH), difference(1, TILE_HEIGHT), 0.75)
+                        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, gravity_constant=PLAYER_GRAVITY, walls=self.tiles)
+                        self.player.reset()
+                        break
 
             
 window = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
