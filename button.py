@@ -1,5 +1,6 @@
 import arcade 
 
+
 class Button(arcade.Sprite):
     def __init__(self, text, image, center_x, center_y):
         super().__init__(image)
@@ -11,3 +12,4 @@ class Button(arcade.Sprite):
     def draw(self): 
         super().draw()
         self.restart_text.draw()
+        

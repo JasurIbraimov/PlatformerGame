@@ -1,6 +1,7 @@
 import arcade 
 from animate import AnimatedSprite
-from constants import PLAYER_SPEED, PLAYER_JUMP_HEIGHT, PLAYER_GRAVITY
+from constants import PLAYER_SPEED
+
 
 class Player(AnimatedSprite):
     def __init__(self, start_x, start_y):
@@ -11,7 +12,6 @@ class Player(AnimatedSprite):
         self.run_left_frames = []
         self.start_x = start_x
         self.start_y = start_y
-
 
         for i in range(8):
             self.walk_right_frames.append(arcade.load_texture(f"assets\images\player\walk\walk{i}.png"))

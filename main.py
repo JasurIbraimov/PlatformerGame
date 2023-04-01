@@ -7,6 +7,7 @@ from maps import *
 from button import Button
 from utils import difference
 
+
 class Game(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
@@ -114,6 +115,7 @@ class Game(arcade.Window):
                     self.win = True
                     arcade.stop_sound(self.music_player)
                     self.music_player = arcade.play_sound(self.win_sound)
+
     def setup_lives(self):
         self.lives = arcade.SpriteList()
         for i in range(3):
@@ -216,5 +218,4 @@ class Game(arcade.Window):
 
             
 window = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-
 arcade.run()

@@ -1,5 +1,6 @@
 import arcade
 
+
 class AnimatedSprite(arcade.Sprite):
     i = 0
     time = 0
@@ -12,3 +13,4 @@ class AnimatedSprite(arcade.Sprite):
             else:
                 self.i += 1
             self.set_texture(self.i)
+            
