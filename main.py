@@ -47,8 +47,16 @@ class Game(arcade.Window):
                             font_name="kenvector future")
         
         self.restart_button = Button("RESTART", "assets\images\\ui\yellow_button00.png", SCREEN_WIDTH/2, SCREEN_HEIGHT/2-80)
-        self.setup()
+        self.players = arcade.SpriteList()
+        players_name = ["robot", "male", "female", "zombie"]
+        for i in range(4):
+            player = Player(players_name[i], difference(i+5, TILE_WIDTH), difference(6, TILE_HEIGHT), 1)
+            player.reset()
+            player.center_x += i * 75 
+            self.players.append(player)
+
         self.setup_lives()
+        self.setup()
 
     def on_draw(self): 
         self.clear((24,119,87))
@@ -58,11 +66,6 @@ class Game(arcade.Window):
             self.key.draw()
         if self.door is not None:
             self.door.draw()
-        if self.player is not None:
-            self.player.draw()
-        else:
-            self.choose_text.draw()
-            self.players.draw()
         self.lives.draw()
         self.gems_text.draw()
         self.gems.draw()
@@ -70,19 +73,19 @@ class Game(arcade.Window):
             self.win_text.draw()
         if self.lose: 
             self.lose_text.draw()
-        if self.win or self.lose or self.player is None: 
-            self.mouse_cursor.draw()
         if self.win or self.lose:
             self.restart_button.draw()
-     
+        if self.player is not None:
+            self.player.draw()
+        else:
+            self.choose_text.draw()
+            self.players.draw()
+        if self.win or self.lose or self.player is None: 
+            self.mouse_cursor.draw()
     def update(self, delta_time):
         if self.win or self.lose or self.player is None:
             return 
-        if len(self.lives) == 0: 
-            self.lose = True
-            self.player.stand()
-            arcade.stop_sound(self.music_player)
-            self.music_player = arcade.play_sound(self.lose_sound)
+
         if self.player.is_moving: 
             self.player.update_animation(delta_time)
 
@@ -124,6 +127,12 @@ class Game(arcade.Window):
                     self.win = True
                     arcade.stop_sound(self.music_player)
                     self.music_player = arcade.play_sound(self.win_sound)
+        
+        if len(self.lives) == 0: 
+            self.lose = True
+            self.player.stand()
+            arcade.stop_sound(self.music_player)
+            self.music_player = arcade.play_sound(self.lose_sound)
 
     def setup_lives(self):
         self.lives = arcade.SpriteList()
@@ -141,21 +150,18 @@ class Game(arcade.Window):
                     tile.center_x = difference(x, TILE_WIDTH)
                     tile.center_y = difference(y, TILE_HEIGHT)
                     self.tiles.append(tile)
-
+    
+    def setup_engine(self):
+        if self.player is not None: 
+            self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, gravity_constant=PLAYER_GRAVITY, walls=self.tiles)
+    
     def setup(self):
         self.tiles = arcade.SpriteList()
         self.traps = arcade.SpriteList()
         self.gems = arcade.SpriteList()
-        self.players = arcade.SpriteList()
-        players_name = ["robot", "male", "female", "zombie"]
-        for i in range(4):
-            player = Player(players_name[i], difference(i+5, TILE_WIDTH), difference(6, TILE_HEIGHT), 1)
-            player.reset()
-            player.center_x += i * 75 
-            self.players.append(player)
-
         self.setup_borders()
-        if self.player is not None:
+        self.setup_engine()
+        if self.player is not None: 
             self.player.reset()
         # ROOM BLOCKS
         random_color = random.randint(1, 4)
@@ -189,10 +195,10 @@ class Game(arcade.Window):
                     self.door.center_y = difference(y+1, TILE_HEIGHT)
     
     def restart(self):
+        self.player = None 
         self.current_room = 0
         self.win = False
         self.lose = False
-        self.player.stand()
         self.gems_count = 0
         arcade.stop_sound(self.music_player)
         self.music_player = arcade.play_sound(self.bg_sound, 0.3, looping=True)     
@@ -237,7 +243,7 @@ class Game(arcade.Window):
                 for player in self.players: 
                     if player.left < x < player.right and player.bottom < y < player.top: 
                         self.player = Player(player.name, difference(1, TILE_WIDTH), difference(1, TILE_HEIGHT), 0.75)
-                        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, gravity_constant=PLAYER_GRAVITY, walls=self.tiles)
+                        self.setup_engine()
                         self.player.reset()
                         break
 
