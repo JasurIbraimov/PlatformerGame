@@ -163,7 +163,7 @@ class Game(arcade.Window):
         self.setup_engine()
         if self.player is not None: 
             self.player.reset()
-        # ROOM BLOCKS
+
         random_color = random.randint(1, 4)
         for y in range(0, ROW_COUNT - 2): 
             for x in range(0, COLUMN_COUNT - 2):
