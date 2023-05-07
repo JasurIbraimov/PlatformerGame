@@ -8,8 +8,6 @@ class Player(AnimatedSprite):
         super().__init__(f"assets\images\player\characters\{name}\player-stand.png", scale=scale)
         self.walk_right_frames = []
         self.walk_left_frames = []
-        self.run_right_frames = []
-        self.run_left_frames = []
         self.name = name
         self.start_x = start_x
         self.start_y = start_y
@@ -34,18 +32,16 @@ class Player(AnimatedSprite):
             self.textures = self.walk_left_frames
 
     def change_jump_costume(self):
-        if self.is_jumping:
-            if self.direction == 1: 
-                self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-jump.png")
-            else: 
-                self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-jump.png", flipped_horizontally=True)
+        if self.direction == 1: 
+            self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-jump.png")
+        else: 
+            self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-jump.png", flipped_horizontally=True)
 
     def change_stand_constume(self):
-        if not self.is_moving:
-            if self.direction == 1:
-                self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-stand.png")
-            else: 
-                self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-stand.png", flipped_horizontally=True)
+        if self.direction == 1:
+            self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-stand.png")
+        else: 
+            self.texture = arcade.load_texture(f"assets\images\player\characters\{self.name}\player-stand.png", flipped_horizontally=True)
 
     def go_left(self):
         self.direction = 2

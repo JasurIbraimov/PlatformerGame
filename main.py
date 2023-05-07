@@ -17,7 +17,7 @@ class Game(arcade.Window):
         self.lose_live_sound = arcade.load_sound("assets\\audio\Crunch.wav")
         self.lose_sound = arcade.load_sound("assets\\audio\Oops.wav")
         self.win_sound = arcade.load_sound("assets\\audio\Triumph.wav")
-        self.music_player = arcade.play_sound(self.bg_sound, 0.3, looping=True)
+        self.music_player = arcade.play_sound(self.bg_sound, 0, looping=True)
         self.tiles = None
         self.traps = None
         self.lives = None
