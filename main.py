@@ -96,21 +96,15 @@ class Game(arcade.Window):
         if self.physics_engine.can_jump():
             self.player.is_jumping = False
         
-        hits = arcade.check_for_collision_with_list(self.player, self.traps)
-        if len(hits) > 0:
-            for trap in hits: 
-                self.lives.pop()        
-                self.player.reset()
-                arcade.play_sound(self.lose_live_sound)
+        self.collide_traps()
 
-        hits = arcade.check_for_collision_with_list(self.player, self.gems)
-        if len(hits) > 0:
-            for gem in hits: 
-                self.gems_count += 1
-                self.gems_text.text = f"GEMS: {self.gems_count}"
-                gem.kill()
-                arcade.play_sound(self.gem_sound)
+        self.collide_gems()
 
+        self.collide_key_and_door()
+        
+        self.check_game_over()
+
+    def collide_key_and_door(self):
         if self.key is not None : 
             if arcade.check_for_collision(self.player, self.key):
                 self.key = None 
@@ -127,12 +121,30 @@ class Game(arcade.Window):
                     self.win = True
                     arcade.stop_sound(self.music_player)
                     self.music_player = arcade.play_sound(self.win_sound)
-        
+
+    def check_game_over(self):
         if len(self.lives) == 0: 
             self.lose = True
             self.player.stand()
             arcade.stop_sound(self.music_player)
             self.music_player = arcade.play_sound(self.lose_sound)
+
+    def collide_gems(self):
+        hits = arcade.check_for_collision_with_list(self.player, self.gems)
+        if len(hits) > 0:
+            for gem in hits: 
+                self.gems_count += 1
+                self.gems_text.text = f"GEMS: {self.gems_count}"
+                gem.kill()
+                arcade.play_sound(self.gem_sound)
+
+    def collide_traps(self):
+        hits = arcade.check_for_collision_with_list(self.player, self.traps)
+        if len(hits) > 0:
+            for trap in hits: 
+                self.lives.pop()        
+                self.player.reset()
+                arcade.play_sound(self.lose_live_sound)
 
     def setup_lives(self):
         self.lives = arcade.SpriteList()
